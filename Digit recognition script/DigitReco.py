@@ -37,9 +37,19 @@ model = kr.models.Sequential() ### Start a neural network, building it by layers
 model.add(kr.layers.Dense(units=600, activation='linear', input_dim=784)) ### Add a hidden layer with 1000 neurons and an input layer with 784.
 model.add(kr.layers.Dense(units=400, activation='relu')) ### Using 'relu' activation function.
 
-model.add(kr.layers.Dense(units=10, activation='softmax')) # Add a 10 neuron output layer.
+model.add(kr.layers.Dense(units=10, activation='softmax')) ### Add a 10 neuron output layer.
 
 print("Model Created!!") ### Test output.
 
+model.compile(loss='categorical_crossentropy', optimizer='adam', metrics=['accuracy']) ### Build the graph.
 
+file_content = ~np.array(list(file_content[16:])).reshape(60000, 28, 28).astype(np.uint8) / 255.0 ### Take every bit after the 16th bit of the file_content variable, resize it into 60000 28*28 arrays and divide by 255 to map it to a color code.
+labels =  np.array(list(labels[ 8:])).astype(np.uint8) ### Take every bit after the 8th bit of the labels array.
 
+inputs = file_content.reshape(60000, 784) ### Reshape the file_ccontent because the neural network has 784 input nodes.
+
+encoder = pre.LabelBinarizer() ### So that we can view a number between 1-10 as a series of 0s and 1s.
+encoder.fit(labels) ### Encode the labels variable.
+outputs = encoder.transform(labels) ### Transform the labels using the encoder.
+
+print(labels[0], outputs[0]) ### Test output to see if the encoder is working.
