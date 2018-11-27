@@ -33,5 +33,13 @@ print(myInt) ### Output the number.
 
 print("======================== KERAS IMPORTED ===================") 
 
+model = kr.models.Sequential() ### Start a neural network, building it by layers.
+model.add(kr.layers.Dense(units=600, activation='linear', input_dim=784)) ### Add a hidden layer with 1000 neurons and an input layer with 784.
+model.add(kr.layers.Dense(units=400, activation='relu')) ### Using 'relu' activation function.
+
+model.add(kr.layers.Dense(units=10, activation='softmax')) # Add a 10 neuron output layer.
+
+print("Model Created!!") ### Test output.
+
 
 
