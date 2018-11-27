@@ -53,7 +53,22 @@ encoder.fit(labels) ### Encode the labels variable.
 outputs = encoder.transform(labels) ### Transform the labels using the encoder.
 
 print(labels[0], outputs[0]) ### Test output to see if the encoder is working.
-
-model.fit(inputs, outputs, epochs=4, batch_size=100) ### Fit the model with 100 elements at a time(Faster precessing) and do this 4 times(Better training).
+### CONVERT EPOCH BACK TO 4
+model.fit(inputs, outputs, epochs=1, batch_size=100) ### Fit the model with 100 elements at a time(Faster precessing) and do this 4 times(Better training).
 
 print("4 Epochs done") ### Debug output to show that is has finished.
+
+with gzip.open('data/t10k-images-idx3-ubyte.gz', 'rb') as f:
+    test_img = f.read() ### Read in the 10000 test images
+
+print("========================= TEST IMAGES FILE IMPORTED ======================")
+
+with gzip.open('data/t10k-labels-idx1-ubyte.gz', 'rb') as f:
+    test_lbl = f.read() ### Read in the corresponding 10000 test labels
+
+print("========================= TEST LABELS FILE IMPORTED ======================")
+
+test_img = ~np.array(list(test_img[16:])).reshape(10000, 784).astype(np.uint8) / 255.0 ### This time, we reshape it to 10000 784 element arrays.
+test_lbl =  np.array(list(test_lbl[ 8:])).astype(np.uint8)
+
+print((encoder.inverse_transform(model.predict(test_img)) == test_lbl).sum()) ### Print out the amount of digits it correctly predicts by comparing it to the corresponding element in the labels file
