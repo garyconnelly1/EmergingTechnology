@@ -9,6 +9,37 @@ import sys
 
 import gzip
 
+### Functions:
+
+def readTrainImages():
+    with gzip.open('data/train-images-idx3-ubyte.gz', 'rb') as f: ### Opens the train images file.
+        file_content = f.read() ### Loads the bits from the file into the file_content variable.
+    return file_content
+
+def readTrainLabels():
+    with gzip.open('data/train-labels-idx1-ubyte.gz', 'rb') as f: ### Use gzip to open the labels file.
+        labels = f.read() ### Read the bits from the file into the 'labels' variable.
+    return labels
+
+def readTestImages():
+    with gzip.open('data/t10k-images-idx3-ubyte.gz', 'rb') as f:
+        test_img = f.read() ### Read in the 10000 test images
+    return test_img
+
+def readTestLabels():
+    with gzip.open('data/t10k-labels-idx1-ubyte.gz', 'rb') as f:
+        test_lbl = f.read() ### Read in the corresponding 10000 test labels
+    return test_lbl
+
+def createModelRelu():
+    model = kr.models.Sequential() ### Start a neural network, building it by layers.
+    model.add(kr.layers.Dense(units=600, activation='linear', input_dim=784)) ### Add a hidden layer with 1000 neurons and an input layer with 784.
+    model.add(kr.layers.Dense(units=400, activation='relu')) ### Using 'relu' activation function.
+
+    model.add(kr.layers.Dense(units=10, activation='softmax')) ### Add a 10 neuron output layer.
+    return model
+    
+
 x = int(input("Enter a number: "))
 ### number = sys.stdin.readline()
 if(x == 1):
@@ -16,11 +47,8 @@ if(x == 1):
 else:
     print("oops")
 
-
+file_content = readTrainImages() ### Call readTrainImages function.
 print("========================= IMAGES FILE IMPORTED ======================")
-with gzip.open('data/train-images-idx3-ubyte.gz', 'rb') as f: ### Opens the train images file.
-    file_content = f.read() ### Loads the bits from the file into the file_content variable.
-
 type(file_content)
 print(type(file_content)) ### To ensure the file is in bytes.
 print(file_content[0:4]) ### Print the first byte.
@@ -29,8 +57,8 @@ print(int.from_bytes(file_content[8:12], byteorder='big'))
 
 ### Read in the labels
 
-with gzip.open('data/train-labels-idx1-ubyte.gz', 'rb') as f: ### Use gzip to open the labels file.
-    labels = f.read() ### Read the bits from the file into the 'labels' variable.
+labels = readTrainLabels() ### Call readTrainLabels function
+
 
 print("========================= LABELS FILE IMPORTED ======================")
 myInt = int.from_bytes(labels[4:8], byteorder="big") ### Reading the second byte which should contain the number of items in the file.
@@ -42,11 +70,7 @@ print(myInt) ### Output the number.
 
 print("======================== KERAS IMPORTED ===================") 
 
-model = kr.models.Sequential() ### Start a neural network, building it by layers.
-model.add(kr.layers.Dense(units=600, activation='linear', input_dim=784)) ### Add a hidden layer with 1000 neurons and an input layer with 784.
-model.add(kr.layers.Dense(units=400, activation='relu')) ### Using 'relu' activation function.
-
-model.add(kr.layers.Dense(units=10, activation='softmax')) ### Add a 10 neuron output layer.
+model = createModelRelu()
 
 print("Model Created!!") ### Test output.
 
@@ -67,13 +91,11 @@ model.fit(inputs, outputs, epochs=1, batch_size=100) ### Fit the model with 100 
 
 print("4 Epochs done") ### Debug output to show that is has finished.
 
-with gzip.open('data/t10k-images-idx3-ubyte.gz', 'rb') as f:
-    test_img = f.read() ### Read in the 10000 test images
+test_img = readTestImages()
 
 print("========================= TEST IMAGES FILE IMPORTED ======================")
 
-with gzip.open('data/t10k-labels-idx1-ubyte.gz', 'rb') as f:
-    test_lbl = f.read() ### Read in the corresponding 10000 test labels
+test_lbl = readTestLabels()
 
 print("========================= TEST LABELS FILE IMPORTED ======================")
 
@@ -89,8 +111,3 @@ for i in range(10):
     print(test_lbl[i])
 
 
-
-def addNumber():
-    return 1+2
-
-print(addNumber())
