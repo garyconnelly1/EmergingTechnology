@@ -4,9 +4,18 @@ import tensorflow as tf
 import numpy as np
 import keras as kr
 import sklearn.preprocessing as pre
+import sys
 
 
 import gzip
+
+x = int(input("Enter a number: "))
+### number = sys.stdin.readline()
+if(x == 1):
+    print(x)
+else:
+    print("oops")
+
 
 print("========================= IMAGES FILE IMPORTED ======================")
 with gzip.open('data/train-images-idx3-ubyte.gz', 'rb') as f: ### Opens the train images file.
@@ -79,5 +88,9 @@ for i in range(10):
     print(result)
     print(test_lbl[i])
 
-name = raw_input("What is your name? ")
-print("Hello ", name)
+
+
+def addNumber():
+    return 1+2
+
+print(addNumber())
