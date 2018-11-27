@@ -72,3 +72,12 @@ test_img = ~np.array(list(test_img[16:])).reshape(10000, 784).astype(np.uint8) /
 test_lbl =  np.array(list(test_lbl[ 8:])).astype(np.uint8)
 
 print((encoder.inverse_transform(model.predict(test_img)) == test_lbl).sum()) ### Print out the amount of digits it correctly predicts by comparing it to the corresponding element in the labels file
+
+
+for i in range(10):
+    result = (encoder.inverse_transform(model.predict(test_img[i:i+1]))) ### Output the first 10 elements of the return array and labels array so the user can visualize it better.
+    print(result)
+    print(test_lbl[i])
+
+name = raw_input("What is your name? ")
+print("Hello ", name)
