@@ -5,8 +5,6 @@ import numpy as np
 import keras as kr
 import sklearn.preprocessing as pre
 import sys
-
-
 import gzip
 
 ### Functions:
@@ -38,14 +36,38 @@ def createModelRelu():
 
     model.add(kr.layers.Dense(units=10, activation='softmax')) ### Add a 10 neuron output layer.
     return model
-    
 
-x = int(input("Enter a number: "))
-### number = sys.stdin.readline()
-if(x == 1):
-    print(x)
-else:
-    print("oops")
+def createModelSigmoid():
+    model = kr.models.Sequential() ### Start a neural network, building it by layers.
+    model.add(kr.layers.Dense(units=600, activation='linear', input_dim=784)) ### Add a hidden layer with 1000 neurons and an input layer with 784.
+    model.add(kr.layers.Dense(units=400, activation='sigmoid')) ### Using 'relu' activation function.
+
+    model.add(kr.layers.Dense(units=10, activation='softmax')) ### Add a 10 neuron output layer.
+    return model
+
+### tanh
+def createModelTanh():
+    model = kr.models.Sequential() ### Start a neural network, building it by layers.
+    model.add(kr.layers.Dense(units=600, activation='linear', input_dim=784)) ### Add a hidden layer with 1000 neurons and an input layer with 784.
+    model.add(kr.layers.Dense(units=400, activation='tanh')) ### Using 'relu' activation function.
+
+    model.add(kr.layers.Dense(units=10, activation='softmax')) ### Add a 10 neuron output layer.
+    return model
+
+
+### End functions.    
+
+print("PRESS 1: ------------------------> Relu")
+print("PRESS 2: ------------------------> Sigmoid")
+print("PRESS 3: ------------------------> Tanh")
+activationFunction = int(input("Select the activation function you wish to use: "))
+print("PRESS 1: ------------------------> Adam")
+print("PRESS 2: ------------------------> Stochastic gradient descent")
+print("PRESS 3: ------------------------> RMSProp")
+selectedOptimizer = int(input("Select the optimizer you wish to use: "))
+
+print (activationFunction)
+print(selectedOptimizer)
 
 file_content = readTrainImages() ### Call readTrainImages function.
 print("========================= IMAGES FILE IMPORTED ======================")
@@ -70,11 +92,22 @@ print(myInt) ### Output the number.
 
 print("======================== KERAS IMPORTED ===================") 
 
-model = createModelRelu()
+
+### Create a model using the activation function the user selected.
+
+if (activationFunction == 1):
+    model = createModelRelu() ### Create the model using 'relu' activation function.
+elif (activationFunction == 2):
+    model = createModelSigmoid() ### Create the model using 'sigmoid' activation function.
+elif (activationFunction == 3):
+    model = createModelTanh() ### Create the model using 'tanh' activation function.
+
 
 print("Model Created!!") ### Test output.
-
-model.compile(loss='categorical_crossentropy', optimizer='adam', metrics=['accuracy']) ### Build the graph.
+optimizer = 'adam'
+optimizerSQD = 'sgd'
+optimizerRMSprop = 'rmsprop'
+model.compile(loss='categorical_crossentropy', optimizer=optimizer, metrics=['accuracy']) ### Build the graph.
 
 file_content = ~np.array(list(file_content[16:])).reshape(60000, 28, 28).astype(np.uint8) / 255.0 ### Take every bit after the 16th bit of the file_content variable, resize it into 60000 28*28 arrays and divide by 255 to map it to a color code.
 labels =  np.array(list(labels[ 8:])).astype(np.uint8) ### Take every bit after the 8th bit of the labels array.
@@ -91,11 +124,11 @@ model.fit(inputs, outputs, epochs=1, batch_size=100) ### Fit the model with 100 
 
 print("4 Epochs done") ### Debug output to show that is has finished.
 
-test_img = readTestImages()
+test_img = readTestImages() ### Read the 10k test images file.
 
 print("========================= TEST IMAGES FILE IMPORTED ======================")
 
-test_lbl = readTestLabels()
+test_lbl = readTestLabels() ### Read the 10k test labels file.
 
 print("========================= TEST LABELS FILE IMPORTED ======================")
 
