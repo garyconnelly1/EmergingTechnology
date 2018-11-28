@@ -8,6 +8,8 @@ import sys
 import gzip
 import cv2
 
+import SaveImages as save
+
 ### Functions:
 
 def readTrainImages():
@@ -56,7 +58,8 @@ def createModelTanh():
     return model
 
 
-### End functions.    
+### End functions.
+save.saveImages()    
 isRunning = "Y"
 while isRunning == "Y":
     
