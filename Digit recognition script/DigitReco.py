@@ -130,8 +130,6 @@ while isRunning == "Y":
     myInt = int.from_bytes(labels[8:9], byteorder="big") ### The label for number '5'.
     print(myInt) ### Output the number.
 
-    print("======================== KERAS IMPORTED ===================") 
-
 
     ### Create a model using the activation function the user selected.
 
