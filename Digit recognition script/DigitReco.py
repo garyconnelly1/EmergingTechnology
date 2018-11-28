@@ -6,6 +6,7 @@ import keras as kr
 import sklearn.preprocessing as pre
 import sys
 import gzip
+import cv2
 
 ### Functions:
 
@@ -163,3 +164,4 @@ while isRunning == "Y":
 print("Program Exited!")
 
 
+### Now have to read in an image from file system as byte string and predict on that
