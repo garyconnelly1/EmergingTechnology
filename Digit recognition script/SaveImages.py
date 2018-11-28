@@ -41,7 +41,7 @@ def saveImages():
     labelBits = 1 ### The length in bits of each label.
     numberOfItems = int.from_bytes(test_lbl[4:8], byteorder="big") ### the number of items to loop through
 
-    for x in range(5): ### for 60,000 iterations
+    for x in range(20): ### for 60,000 iterations
         image = ~np.array(list(file_content[start:interval])).reshape(28,28).astype(np.uint8) ### assign this slice of bits to the image variable
         myInt = int.from_bytes(test_lbl[startLabels:endLabels], byteorder="big") ### assign this slice of bits to the myInt variable
         start += imgBits ### increase the start pointer by the number of bits per image

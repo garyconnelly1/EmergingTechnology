@@ -63,43 +63,46 @@ def predictAll(encoder, model, test_img, test_lbl):
 
     for i in range(10):
         result = (encoder.inverse_transform(model.predict(test_img[i:i+1]))) ### Output the first 10 elements of the return array and labels array so the user can visualize it better.
-        print(result)
-        print(test_lbl[i])
+        print("PREDICTION: " + str(result))
+        print("ACTUAL: " + str(test_lbl[i]))
 
-def readImageAsBytes(imageName):
-    b = cv2.imread(imageName + ".png")
-    gray = cv2.cvtColor(b,cv2.COLOR_BGR2GRAY)
-    img = np.array(gray).reshape(784,1)/255
+def readImageAsBytes(imageName): ### Function to read in a png file from file system.
+    b = cv2.imread(imageName + ".png") ### Read in the file. It will be in format [28(28*3)].
 
-    return img
+    if b is None:
+        print("File does not exist or is not an image file. Try again") ### Error message to tell the user why it failed
+        sys.exit(0)
 
-def predictFile(b, model, encoder):
-     bArray = np.array(list(b)).reshape(1, 784).astype(np.uint8)
+    gray = cv2.cvtColor(b,cv2.COLOR_BGR2GRAY) ### Change the RGB values to gray scale values so the network can process them. File is now in format [28*28].
+    img = np.array(gray).reshape(784,1)/255 ### Reshape the image to an array of shape [784*1].
+
+    return img ### Return that array.
+
+def predictFile(b, model, encoder): ### Function to predict the contents of a file passed from the file system.
+     bArray = np.array(list(b)).reshape(1, 784).astype(np.uint8) ### Reshape the array to [1*784] so it fits the network(784 input neurons).
     
-     result = (encoder.inverse_transform(model.predict(bArray)))
-     print(str(result) + "/////////////////////////////////////////////////")
+     result = (encoder.inverse_transform(model.predict(bArray))) ### Create a result.
+     print("PREDICTION: " + str(result)) ### Output prediction
      print("================= SINGLE FILE PREDICTED ======================")
-     #test_img = ~np.array(list(test_img[16:])).reshape(10000, 784).astype(np.uint8) / 255.0 ### This time, we reshape it to 10000 784 element arrays.
-     #test_lbl =  np.array(list(test_lbl[ 8:])).astype(np.uint8)
-    
-    
-    
 
-
+def passFile(model, encoder): ### Function to allow the user to pass a selected file network.
+    fileName = input("Please enter the name of the file you wish to test.(Just the file name, no extensions)") ### Instruct the user how to preceed.
+    theImageFile = readImageAsBytes(fileName) ### Turn the image into a gray scale array of the correct format.
+    predictFile(theImageFile, model, encoder) ### Predict the result.
+    
+    
 ### End functions.
 
-
-save.saveImages()  
-b = readImageAsBytes("4_4")  
-print(type(b))
-print(b[0])
 isRunning = "Y"
 while isRunning == "Y":
     
+    ### Allow the user to select the activation function they wish to use.
     print("PRESS 1: ------------------------> Relu")
     print("PRESS 2: ------------------------> Sigmoid")
     print("PRESS 3: ------------------------> Tanh")
     activationFunction = int(input("Select the activation function you wish to use: "))
+
+    ### Allow the user to select the optimizer they wish to use.
     print("PRESS 1: ------------------------> Adam")
     print("PRESS 2: ------------------------> Stochastic gradient descent")
     print("PRESS 3: ------------------------> RMSProp")
@@ -141,6 +144,7 @@ while isRunning == "Y":
         model = createModelTanh() ### Create the model using 'tanh' activation function.
     else:
         print("Not one of the options, please re run the program and try again.")
+        sys.exit(0)
 
 
     print("Model Created!!") ### Test output.
@@ -155,6 +159,7 @@ while isRunning == "Y":
         optimizer = 'rmsprop'
     else:
         print("Not one of the options, please re run the program and try again.")
+        sys.exit(0)
 
     print("OPTIMIZER: ", optimizer)
         
@@ -172,7 +177,7 @@ while isRunning == "Y":
 
     print(labels[0], outputs[0]) ### Test output to see if the encoder is working.
     ### CONVERT EPOCH BACK TO 4
-    model.fit(inputs, outputs, epochs=1, batch_size=100) ### Fit the model with 100 elements at a time(Faster precessing) and do this 4 times(Better training).
+    model.fit(inputs, outputs, epochs=4, batch_size=100) ### Fit the model with 100 elements at a time(Faster precessing) and do this 4 times(Better training).
 
     print("Model is trained") ### Debug output to show that is has finished.
 
@@ -186,17 +191,25 @@ while isRunning == "Y":
 
     test_img = ~np.array(list(test_img[16:])).reshape(10000, 784).astype(np.uint8) / 255.0 ### This time, we reshape it to 10000 784 element arrays.
     test_lbl =  np.array(list(test_lbl[ 8:])).astype(np.uint8)
+
+
+    print("\n\n ======================== SELECT THE TESTING METHOD ====================") ### Allow the user to select how to test the network.
     print("PRESS 1: -------------------------> Test all images, showing you the sum of correctly predicted images.(Along with outputting the predicted vs actual results for the first 10)")
     print("PRESS 2: -------------------------> Automatically install 20 random images so you can pass a selected file to the network and view the predicted result.")
-    methodOfTesting = int(input("Select the activation function you wish to use: "))
-    print("You chose " + methodOfTesting)
-    predictAll(encoder, model, test_img, test_lbl) ### Predict all the images and output the first 10.
-    
-    predictFile(b, model, encoder)
- 
-    isRunning = input("Try again?: [Y/N] ")
+    methodOfTesting = int(input("Select the method of testing you wish to use: "))
+
+    if (methodOfTesting == 1):
+         predictAll(encoder, model, test_img, test_lbl) ### Predict all the images and output the first 10.
+    elif (methodOfTesting == 2):
+        print("Saving the images...")
+        save.saveImages()  ### Save the images to the devices file system.
+        passFile(model, encoder) ### Allow the user to enter the file they wish to test.
+    else:
+        print("Not one of the options, please re run the program and try again.")
+        sys.exit(0)
+        
+   
+    isRunning = input("Try again?: [Y/N] ") ### Give the user the opportunity to re-run the program.
 
 print("Program Exited!")
 
-
-### Now have to read in an image from file system as byte string and predict on that
