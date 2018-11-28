@@ -49,7 +49,6 @@ def createModelSigmoid():
     model.add(kr.layers.Dense(units=10, activation='softmax')) ### Add a 10 neuron output layer.
     return model    
 
-### tanh
 def createModelTanh():
     model = kr.models.Sequential() ### Start a neural network, building it by layers.
     model.add(kr.layers.Dense(units=600, activation='linear', input_dim=784)) ### Add a hidden layer with 1000 neurons and an input layer with 784.
