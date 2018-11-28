@@ -7,6 +7,7 @@ import sklearn.preprocessing as pre
 import sys
 import gzip
 import cv2
+from PIL import Image
 
 import SaveImages as save
 
@@ -46,7 +47,7 @@ def createModelSigmoid():
     model.add(kr.layers.Dense(units=400, activation='sigmoid')) ### Using 'relu' activation function.
 
     model.add(kr.layers.Dense(units=10, activation='softmax')) ### Add a 10 neuron output layer.
-    return model
+    return model    
 
 ### tanh
 def createModelTanh():
@@ -57,9 +58,41 @@ def createModelTanh():
     model.add(kr.layers.Dense(units=10, activation='softmax')) ### Add a 10 neuron output layer.
     return model
 
+def predictAll(encoder, model, test_img, test_lbl):
+    print((encoder.inverse_transform(model.predict(test_img)) == test_lbl).sum()) ### Print out the amount of digits it correctly predicts by comparing it to the corresponding element in the labels file
+
+    for i in range(10):
+        result = (encoder.inverse_transform(model.predict(test_img[i:i+1]))) ### Output the first 10 elements of the return array and labels array so the user can visualize it better.
+        print(result)
+        print(test_lbl[i])
+
+def readImageAsBytes(imageName):
+    b = cv2.imread(imageName + ".png")
+    gray = cv2.cvtColor(b,cv2.COLOR_BGR2GRAY)
+    img = np.array(gray).reshape(784,1)/255
+
+    return img
+
+def predictFile(b, model, encoder):
+     bArray = np.array(list(b)).reshape(1, 784).astype(np.uint8)
+    
+     result = (encoder.inverse_transform(model.predict(bArray)))
+     print(str(result) + "/////////////////////////////////////////////////")
+     print("================= SINGLE FILE PREDICTED ======================")
+     #test_img = ~np.array(list(test_img[16:])).reshape(10000, 784).astype(np.uint8) / 255.0 ### This time, we reshape it to 10000 784 element arrays.
+     #test_lbl =  np.array(list(test_lbl[ 8:])).astype(np.uint8)
+    
+    
+    
+
 
 ### End functions.
-save.saveImages()    
+
+
+save.saveImages()  
+b = readImageAsBytes("4_4")  
+print(type(b))
+print(b[0])
 isRunning = "Y"
 while isRunning == "Y":
     
@@ -141,7 +174,7 @@ while isRunning == "Y":
     ### CONVERT EPOCH BACK TO 4
     model.fit(inputs, outputs, epochs=1, batch_size=100) ### Fit the model with 100 elements at a time(Faster precessing) and do this 4 times(Better training).
 
-    print("4 Epochs done") ### Debug output to show that is has finished.
+    print("Model is trained") ### Debug output to show that is has finished.
 
     test_img = readTestImages() ### Read the 10k test images file.
 
@@ -153,15 +186,14 @@ while isRunning == "Y":
 
     test_img = ~np.array(list(test_img[16:])).reshape(10000, 784).astype(np.uint8) / 255.0 ### This time, we reshape it to 10000 784 element arrays.
     test_lbl =  np.array(list(test_lbl[ 8:])).astype(np.uint8)
-
-    print((encoder.inverse_transform(model.predict(test_img)) == test_lbl).sum()) ### Print out the amount of digits it correctly predicts by comparing it to the corresponding element in the labels file
-
-
-    for i in range(10):
-        result = (encoder.inverse_transform(model.predict(test_img[i:i+1]))) ### Output the first 10 elements of the return array and labels array so the user can visualize it better.
-        print(result)
-        print(test_lbl[i])
-
+    print("PRESS 1: -------------------------> Test all images, showing you the sum of correctly predicted images.(Along with outputting the predicted vs actual results for the first 10)")
+    print("PRESS 2: -------------------------> Automatically install 20 random images so you can pass a selected file to the network and view the predicted result.")
+    methodOfTesting = int(input("Select the activation function you wish to use: "))
+    print("You chose " + methodOfTesting)
+    predictAll(encoder, model, test_img, test_lbl) ### Predict all the images and output the first 10.
+    
+    predictFile(b, model, encoder)
+ 
     isRunning = input("Try again?: [Y/N] ")
 
 print("Program Exited!")
