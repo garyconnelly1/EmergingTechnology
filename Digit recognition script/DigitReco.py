@@ -8,6 +8,7 @@ import sys
 import gzip
 import cv2
 from PIL import Image
+from keras.models import load_model
 
 import SaveImages as save
 
@@ -174,9 +175,11 @@ while isRunning == "Y":
 
     print(labels[0], outputs[0]) ### Test output to see if the encoder is working.
     ### CONVERT EPOCH BACK TO 4
-    model.fit(inputs, outputs, epochs=2, batch_size=100) ### Fit the model with 100 elements at a time(Faster precessing) and do this 4 times(Better training).
+    model.fit(inputs, outputs, epochs=4, batch_size=100) ### Fit the model with 100 elements at a time(Faster precessing) and do this 4 times(Better training).
 
-    print("Model is trained") ### Debug output to show that is has finished.
+    model.save('my_model4Epochs') ### FIRST ATTEMPT AT SAVING THE MODEL
+   # print("Model saved to disk")
+  #  print("Model is trained") ### Debug output to show that is has finished.
 
     test_img = readTestImages() ### Read the 10k test images file.
 
@@ -194,7 +197,8 @@ while isRunning == "Y":
     print("PRESS 1: -------------------------> Test all images, showing you the sum of correctly predicted images.(Along with outputting the predicted vs actual results for the first 10)")
     print("PRESS 2: -------------------------> Automatically install 20 random images so you can pass a selected file to the network and view the predicted result.")
     methodOfTesting = int(input("Select the method of testing you wish to use: "))
-
+    model = load_model('my_model2Epochs')
+    print("model loaded from disk")
     if (methodOfTesting == 1):
          predictAll(encoder, model, test_img, test_lbl) ### Predict all the images and output the first 10.
     elif (methodOfTesting == 2):
