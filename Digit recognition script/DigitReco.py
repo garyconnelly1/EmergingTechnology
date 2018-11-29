@@ -174,7 +174,7 @@ while isRunning == "Y":
 
     print(labels[0], outputs[0]) ### Test output to see if the encoder is working.
     ### CONVERT EPOCH BACK TO 4
-    model.fit(inputs, outputs, epochs=4, batch_size=100) ### Fit the model with 100 elements at a time(Faster precessing) and do this 4 times(Better training).
+    model.fit(inputs, outputs, epochs=2, batch_size=100) ### Fit the model with 100 elements at a time(Faster precessing) and do this 4 times(Better training).
 
     print("Model is trained") ### Debug output to show that is has finished.
 
