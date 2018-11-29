@@ -9,6 +9,7 @@ import gzip
 import cv2
 from PIL import Image
 from keras.models import load_model
+from keras.layers import Dropout
 
 import SaveImages as save
 
@@ -38,7 +39,7 @@ def createModelRelu():
     model = kr.models.Sequential() ### Start a neural network, building it by layers.
     model.add(kr.layers.Dense(units=600, activation='linear', input_dim=784)) ### Add a hidden layer with 1000 neurons and an input layer with 784.
     model.add(kr.layers.Dense(units=400, activation='relu')) ### Using 'relu' activation function.
-
+    
     model.add(kr.layers.Dense(units=10, activation='softmax')) ### Add a 10 neuron output layer.
     return model
 
@@ -128,12 +129,14 @@ while isRunning == "Y":
     
     if (useDefault == 2):
         ### Allow the user to select the activation function they wish to use.
+        print("======================================================")
         print("PRESS 1: ------------------------> Relu")
         print("PRESS 2: ------------------------> Sigmoid")
         print("PRESS 3: ------------------------> Tanh")
         activationFunction = int(input("Select the activation function you wish to use: "))
 
         ### Allow the user to select the optimizer they wish to use.
+        print("======================================================")
         print("PRESS 1: ------------------------> Adam")
         print("PRESS 2: ------------------------> Stochastic gradient descent")
         print("PRESS 3: ------------------------> RMSProp")
