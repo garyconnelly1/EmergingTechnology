@@ -95,28 +95,14 @@ def passFile(model, encoder): ### Function to allow the user to pass a selected 
 
 isRunning = "Y"
 while isRunning == "Y":
-    
-    ### Allow the user to select the activation function they wish to use.
-    print("PRESS 1: ------------------------> Relu")
-    print("PRESS 2: ------------------------> Sigmoid")
-    print("PRESS 3: ------------------------> Tanh")
-    activationFunction = int(input("Select the activation function you wish to use: "))
-
-    ### Allow the user to select the optimizer they wish to use.
-    print("PRESS 1: ------------------------> Adam")
-    print("PRESS 2: ------------------------> Stochastic gradient descent")
-    print("PRESS 3: ------------------------> RMSProp")
-    selectedOptimizer = int(input("Select the optimizer you wish to use: "))
-
-
+    print("----------------------- WELCOME ------------------------")
+    print("PRESS 1: ------------------------> Load one of the already trained models in memory.")
+    print("PRESS 2: ------------------------> Configure and train your own model (Uses 2 epochs by default)")
+    useDefault = int(input("Select how you want to interact with the program: "))
 
     file_content = readTrainImages() ### Call readTrainImages function.
     print("========================= IMAGES FILE IMPORTED ======================")
     type(file_content)
-    print(type(file_content)) ### To ensure the file is in bytes.
-    print(file_content[0:4]) ### Print the first byte.
-    print(int.from_bytes(file_content[0:4], byteorder='big')) ### Convert the first byte to 'int'.
-    print(int.from_bytes(file_content[8:12], byteorder='big'))
 
     ### Read in the labels
 
@@ -126,43 +112,10 @@ while isRunning == "Y":
     print("========================= LABELS FILE IMPORTED ======================")
     myInt = int.from_bytes(labels[4:8], byteorder="big") ### Reading the second byte which should contain the number of items in the file.
 
-    print(myInt) ### Output the number.
-
     myInt = int.from_bytes(labels[8:9], byteorder="big") ### The label for number '5'.
-    print(myInt) ### Output the number.
-
-
-    ### Create a model using the activation function the user selected.
-
-    if (activationFunction == 1):
-        model = createModelRelu() ### Create the model using 'relu' activation function.
-    elif (activationFunction == 2):
-        model = createModelSigmoid() ### Create the model using 'sigmoid' activation function.
-    elif (activationFunction == 3):
-        model = createModelTanh() ### Create the model using 'tanh' activation function.
-    else:
-        print("Not one of the options, please re run the program and try again.")
-        sys.exit(0)
-
-
-    print("Model Created!!") ### Test output.
-
-    ### Use the optimizer the user selected.
-
-    if (selectedOptimizer == 1):
-        optimizer = 'adam'
-    elif (selectedOptimizer == 2):
-        optimizer = 'sgd'
-    elif (selectedOptimizer == 3):
-        optimizer = 'rmsprop'
-    else:
-        print("Not one of the options, please re run the program and try again.")
-        sys.exit(0)
-
-    print("OPTIMIZER: ", optimizer)
-        
-
-    model.compile(loss='categorical_crossentropy', optimizer=optimizer, metrics=['accuracy']) ### Build the graph.
+   
+    print("Loading(Please wait a moment)...")
+    
 
     file_content = ~np.array(list(file_content[16:])).reshape(60000, 28, 28).astype(np.uint8) / 255.0 ### Take every bit after the 16th bit of the file_content variable, resize it into 60000 28*28 arrays and divide by 255 to map it to a color code.
     labels =  np.array(list(labels[ 8:])).astype(np.uint8) ### Take every bit after the 8th bit of the labels array.
@@ -172,14 +125,81 @@ while isRunning == "Y":
     encoder = pre.LabelBinarizer() ### So that we can view a number between 1-10 as a series of 0s and 1s.
     encoder.fit(labels) ### Encode the labels variable.
     outputs = encoder.transform(labels) ### Transform the labels using the encoder.
+    
+    if (useDefault == 2):
+        ### Allow the user to select the activation function they wish to use.
+        print("PRESS 1: ------------------------> Relu")
+        print("PRESS 2: ------------------------> Sigmoid")
+        print("PRESS 3: ------------------------> Tanh")
+        activationFunction = int(input("Select the activation function you wish to use: "))
 
-    print(labels[0], outputs[0]) ### Test output to see if the encoder is working.
-    ### CONVERT EPOCH BACK TO 4
-    model.fit(inputs, outputs, epochs=4, batch_size=100) ### Fit the model with 100 elements at a time(Faster precessing) and do this 4 times(Better training).
+        ### Allow the user to select the optimizer they wish to use.
+        print("PRESS 1: ------------------------> Adam")
+        print("PRESS 2: ------------------------> Stochastic gradient descent")
+        print("PRESS 3: ------------------------> RMSProp")
+        selectedOptimizer = int(input("Select the optimizer you wish to use: "))
 
-    model.save('my_model4Epochs') ### FIRST ATTEMPT AT SAVING THE MODEL
-   # print("Model saved to disk")
-  #  print("Model is trained") ### Debug output to show that is has finished.
+        ### Create a model using the activation function the user selected.
+
+        if (activationFunction == 1):
+             model = createModelRelu() ### Create the model using 'relu' activation function.
+        elif (activationFunction == 2):
+            model = createModelSigmoid() ### Create the model using 'sigmoid' activation function.
+        elif (activationFunction == 3):
+            model = createModelTanh() ### Create the model using 'tanh' activation function.
+        else:
+            print("Not one of the options, please re run the program and try again.")
+            sys.exit(0)
+
+
+        print("Model Created!!") ### Test output.
+
+        ### Use the optimizer the user selected.
+
+        if (selectedOptimizer == 1):
+            optimizer = 'adam'
+        elif (selectedOptimizer == 2):
+            optimizer = 'sgd'
+        elif (selectedOptimizer == 3):
+            optimizer = 'rmsprop'
+        else:
+            print("Not one of the options, please re run the program and try again.")
+            sys.exit(0)
+
+        print("OPTIMIZER: ", optimizer)
+        
+
+        model.compile(loss='categorical_crossentropy', optimizer=optimizer, metrics=['accuracy']) ### Build the graph.
+        model.fit(inputs, outputs, epochs=2, batch_size=100) ### Fit the model with 100 elements at a time(Faster precessing) and do this 4 times(Better training).
+       # model.save('my_model5Epochs')
+
+    elif (useDefault == 1):
+        print("---------------- WHAT MODEL WOULD YOU LIKE TO LOAD? -------------")
+        print("PRESS 1: ------------------------> Model trained with 1 epoch")
+        print("PRESS 2: ------------------------> Model trained with 2 epochs")
+        print("PRESS 3: ------------------------> Model trained with 3 epochs")
+        print("PRESS 4: ------------------------> Model trained with 4 epochs")
+        print("PRESS 5: ------------------------> Model trained with 5 epochs")
+        whatModelToUse = int(input("Select the trained model you would like to load from disk: "))
+
+        ### Use the saved model the user selected.
+
+        if (whatModelToUse == 1):
+             model = load_model('my_model1Epochs')
+        elif (whatModelToUse == 2):
+            model = load_model('my_model2Epochs')
+        elif (whatModelToUse == 3):
+            model = load_model('my_model3Epochs')
+        elif (whatModelToUse == 4):
+            model = load_model('my_model4Epochs')
+        elif (whatModelToUse == 5):
+            model = load_model('my_model5Epochs')
+        else:
+            print("Not one of the options, please re run the program and try again.")
+            sys.exit(0)
+            
+        print("model loaded from disk")
+
 
     test_img = readTestImages() ### Read the 10k test images file.
 
@@ -197,8 +217,7 @@ while isRunning == "Y":
     print("PRESS 1: -------------------------> Test all images, showing you the sum of correctly predicted images.(Along with outputting the predicted vs actual results for the first 10)")
     print("PRESS 2: -------------------------> Automatically install 20 random images so you can pass a selected file to the network and view the predicted result.")
     methodOfTesting = int(input("Select the method of testing you wish to use: "))
-    model = load_model('my_model2Epochs')
-    print("model loaded from disk")
+   
     if (methodOfTesting == 1):
          predictAll(encoder, model, test_img, test_lbl) ### Predict all the images and output the first 10.
     elif (methodOfTesting == 2):
