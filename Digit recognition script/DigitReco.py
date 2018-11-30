@@ -61,7 +61,7 @@ def createModelTanh():
 
 def predictAll(encoder, model, test_img, test_lbl):
     print((encoder.inverse_transform(model.predict(test_img)) == test_lbl).sum()) ### Print out the amount of digits it correctly predicts by comparing it to the corresponding element in the labels file
-
+    print("^ Images predicted correctly out of 10,000")
     for i in range(10):
         result = (encoder.inverse_transform(model.predict(test_img[i:i+1]))) ### Output the first 10 elements of the return array and labels array so the user can visualize it better.
         print("PREDICTION: " + str(result))
